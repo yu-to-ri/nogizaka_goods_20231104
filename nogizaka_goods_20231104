@@ -1,0 +1,28 @@
+from PIL import Image
+import os
+# 画像の範囲を定義します（左上のx座標、左上のy座標、右下のx座標、右下のy座標）
+# メンバーの位置をペイントとか使ってピクセル単位で調べる
+crop_rectangle = (605, 250, 780, 755)
+# 切り取りたい画像のファイル名をリストに格納します
+# ファイル名何でもいいので同じプロジェクトファイルに入れる
+image_files = ['4th-2-spring.png', '4th-2-summer.png', '4th-2-autumn.png', '4th-2-winter.png']
+# ---変えるコードは基本この上↑だけ---
+# 各画像を切り取り、新しい画像リストに追加します
+cropped_images = []
+for image_file in image_files:
+    img = Image.open(image_file)
+    # 元の画像が切り取りたい範囲よりも大きいことを確認します
+    if img.size[0] > crop_rectangle[2] and img.size[1] > crop_rectangle[3]:
+        cropped_img = img.crop(crop_rectangle)
+        cropped_images.append(cropped_img)
+    else:
+        print(f"{image_file} is too small to be cropped with the given rectangle")
+if cropped_images:  # 切り取った画像がある場合だけ結合します
+    # 切り取った画像を結合します
+    # 画像の切り取り範囲の(下辺-上辺)*個数,右辺-左辺のサイズで新しい画像を作成
+    combined_image = Image.new('RGB', ((crop_rectangle[2]-crop_rectangle[0])*len(cropped_images), (crop_rectangle[3]-crop_rectangle[1])))
+    # i*(crop_rectangle[2]-crop_rectangle[0])で貼り付けるX座標を指定し、個数分ループ。Y座標は0からスタート
+    for i, cropped_img in enumerate(cropped_images):
+        combined_image.paste(cropped_img, (i*(crop_rectangle[2]-crop_rectangle[0]), 0))
+    # 結合した画像を保存します
+    combined_image.save('calendar2024_acrylic_stand_yumiki_nao.png')
